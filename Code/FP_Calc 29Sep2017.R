@@ -9,6 +9,20 @@
 ###############
 ## FUNCTIONS ##
 ###############
+#spfiINDEX
+spfiINDEX <- function(x) {
+  y = x
+  for(i in 2:ncol(x)) {
+    y[,i] = x[,i]/mean(x[1:4,i])
+  }
+  if(mean(x[1:4,2])>=.97) {
+    cat("BPER average is near 1, likely already an index, function will return x\n")
+    return(x)
+  } else {
+    return(y)
+  }
+}
+
 #readSTK
 	readSTK <- function(filename, stkCharLength = 3, fisheryNames = paste("f",1:25,sep=""), outname = "STK_ReFormatted.txt") {
 		#Read in the file by line
@@ -150,6 +164,11 @@ names(spfiDAT.nbc) <- c("YEAR", "SPFI", "Total")
 spfiDAT.wcvi <- readSPFI("Data/WCVI15LC_4000.CSV", "Data/wcvi_spfi.csv")
 names(spfiDAT.wcvi) <- c("YEAR", "SPFI", "FALL.WIN", "SPRING", "SUMMER")
 
+#Convert SPFI to an index
+ spfiDAT.seak = spfiINDEX(spfiDAT.seak)
+ #spfiDAT.nbc  = spfiINDEX(spfiDAT.nbc)
+ spfiDAT.wcvi = spfiINDEX(spfiDAT.wcvi)
+ 
 #Read in STK file (NOTE function assumes stock names are 3 characters long)
 stkDAT <- readSTK("Data/2017BPC_PII_V1.14.STK", stkCharLength=3, fisheryNames = fishery48, outname = "Data/STK_ReFormatted.txt")
 
