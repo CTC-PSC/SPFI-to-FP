@@ -1,3 +1,149 @@
+deBUG = FALSE
+###############
+## FUNCTIONS ##
+###############
+#spfiINDEX
+spfiINDEX <- function(x) {
+  y = x
+  for(i in 2:ncol(x)) {
+    y[,i] = x[,i]/mean(x[1:4,i])
+  }
+  if(mean(x[1:4,2])>=.97) {
+    cat("BPER average is near 1, likely already an index, function will return x\n")
+    return(x)
+  } else {
+    return(y)
+  }
+}
+
+#readSTK
+readSTK <- function(filename, stkCharLength = 3, fisheryNames = paste("f",1:25,sep=""), outname = "STK_ReFormatted.txt") {
+  #Read in the file by line
+  rawSTK <- readLines(filename)
+  #Find the locations where stock names are located
+  stkNameLocs <- vapply(rawSTK, nchar, 1) %in% stkCharLength 
+  #Cut out the stock names
+  stkNames <- rawSTK[stkNameLocs]
+  #Cut out the data for each stocks
+  rawSTKDat <- rawSTK[!stkNameLocs]
+  #nLines for each stock
+  nLines <- length(rawSTKDat)/length(stkNames)
+  #Create a dummy "formatted" STK file for input into R via normal means
+  STKout <- rawSTKDat #e.g. a place holder dataset
+  MasterCounter <- 1
+  for ( i in 1:length(stkNames)) {
+    for (j in 1:nLines) {
+      #first line is initial cohort abundance
+      if(j == 1) { STKout[MasterCounter] <- paste(stkNames[i], " ", rawSTKDat[MasterCounter], " InitCohAbun") }
+      #second line is maturation rates
+      else if (j == 2) { STKout[MasterCounter] <- paste(stkNames[i], " ", rawSTKDat[MasterCounter], " MatRates") }
+      #third line is the AEQ factor
+      else if (j == 3) {  STKout[MasterCounter] <- paste(stkNames[i], " ", rawSTKDat[MasterCounter], " AEQfactor") }
+      #4th to end of fishery designation is the ER rates by fisheries
+      else { STKout[MasterCounter] <- paste(stkNames[i], " ", rawSTKDat[MasterCounter], " ", fisheryNames[j-3]) }
+      MasterCounter = MasterCounter + 1
+    }
+  }
+  #Write output to a new file
+  write.table(STKout, outname, quote = FALSE, row.names = FALSE, col.names = FALSE)
+  #Read back in the same file via normal means
+  out <- read.table(outname)
+  #Add column names to data
+  names(out) <- c("Stock","Age2","Age3","Age4","Age5","Value")
+  return(out)
+}
+
+readSPFI <- function(filename, outname = "SPFI_ReFormatted.txt") {
+  #Read in the file by line
+  rawSPFI <- readLines(filename)
+  #Find the row that corresponds to a blank line
+  blankLOC <- vapply(rawSPFI, nchar, 1) %in% 0
+  #select out everything after first blank line
+  SPFIout <- rawSPFI[!cumsum(blankLOC)>0]
+  #Write output to a new file
+  write.table(SPFIout, outname, quote = FALSE, row.names = FALSE, col.names = FALSE)
+  #Read back in the same file via normal means
+  out <- read.csv(outname, row.names=NULL)
+  #Drop column 3 and return data to user
+  return(out[,-3])
+}
+
+#readMDL
+readMDL <- function(filename, numChar = 5, escapement = TRUE) {
+  #Read in the file by line
+  rawMDL <- readLines(filename)
+  #Line 1 contains the tag code
+  modstock <- rawMDL[1]
+  #Line 2 is a junk line - just has "MODEL"
+  by = "bpc broods"
+  #Line 3 contains the number of fish tagged
+  numTagg <- as.numeric(rawMDL[3])
+  #Line 4 contains the number of fish released
+  numFish <- as.numeric(rawMDL[4])
+  #Line 5 contains max age
+  maxAge <- as.numeric(rawMDL[5])
+  #Line 6 contains the number of fisheries
+  #numFisheries <- as.numeric(rawMDL[6])
+  numFisheries <- length(rawMDL) - 9 - 1 #b/c the 48F MDLs have the wrong numFishery (doh!)
+  #Lines 7 to numFish have the fishery names
+  nameFisheries <- as.vector(rawMDL[7:(6+numFisheries)])
+  #Last lines of the file contain the number of recoveries by age and fishery
+  numAges <- length(rawMDL)-(6+numFisheries)
+  #Create a blank matrix to contain the data
+  recByFish <- matrix(ncol=numAges, nrow=numFisheries)
+  colnames(recByFish) <- paste("age",2:(numAges+1),sep="")
+  rownames(recByFish) <- nameFisheries
+  for(i in 1:numAges) {
+    recov <- rawMDL[i+6+numFisheries]
+    #if old format (#### or #####)
+    if(grepl(",",recov)==FALSE) {
+      for(j in 1:numFisheries) {
+        hold <- substr(recov, start=((j-1)*numChar+1),stop=(j*numChar))
+        #additional error checking...
+        recByFish[j,i] <- as.numeric(hold)
+      }
+    }
+    #if new format (csv)
+    if(grepl(",",recov)==TRUE) {
+      recov2 = strsplit(recov,",")
+      for(j in 1:numFisheries) {
+        hold <- recov2[[1]][j]
+        #additional error checking...
+        recByFish[j,i] <- as.numeric(hold)
+      }
+    }
+    
+  }
+  #If escapement is set to be true, then the last numChar's in the row are 'escapement'
+  #NOTE: I may want to test to see if numFisheries*numChar < nchar(recov), and if it is, read in the last line as escapement...
+  if(escapement==TRUE) {
+    escapByAge <- matrix(ncol=numAges, nrow=1)
+    for(i in 1:numAges) {
+      recov <- rawMDL[i+6+numFisheries]
+      #if old format (#### or #####)
+      if(grepl(",",recov)==FALSE) {
+        hold <- substr(recov, start=nchar(recov)-numChar+1,stop=nchar(recov))
+        escapByAge[1,i] <- as.numeric(hold)
+      }
+      #if new format (csv)
+      if(grepl(",",recov)==TRUE) {
+        recov2 = strsplit(recov,",")
+        hold <- recov2[[1]][length(recov2[[1]])]
+        escapByAge[1,i] <- as.numeric(hold)
+      }
+    }
+    rownames(escapByAge) <- "Escapement"
+    colnames(escapByAge) <- paste("age",2:(numAges+1),sep="")
+  } else escapByAge = NULL
+  #Return output 
+  list(ModelStock=modstock, BroodYear=by, FishTagged = numTagg, FishReleased = numFish, AgeMax = maxAge, nFisheries = numFisheries, RecoveriesByFishery = recByFish, Escapement = escapByAge)
+}
+
+
+###################
+#NEW FUNCTION 
+#WORKING AREA#
+###################
 SPFItoFP <- function(nstrata, modfishery, spfistratvec, startyear, mdldat, spfidat, npredfuture, stkdat) {
   #Preliminaries
    #data user provides
@@ -94,7 +240,7 @@ SPFItoFP <- function(nstrata, modfishery, spfistratvec, startyear, mdldat, spfid
   return(OutFinal)
 }
 
-writeFP <- function(fpa, fpfilename, ) {
+writeFP <- function(fpa, fpfilename) {
   OutFinal <- fpa #output from SPFItoFP
   #Write output to a tab deliminated file
   write.table(OutFinal, "Results/tmp.txt", quote=FALSE, sep = "\t", row.names=TRUE, col.names=TRUE)
