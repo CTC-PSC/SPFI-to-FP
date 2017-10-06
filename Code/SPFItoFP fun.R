@@ -1,4 +1,4 @@
-SPFItoFP <- function(nstrata, modfishery, spfistratvec, startyear, mdldat, spfidat, npredfuture, stkdat, fpfilename) {
+SPFItoFP <- function(nstrata, modfishery, spfistratvec, startyear, mdldat, spfidat, npredfuture, stkdat) {
   #Preliminaries
    #data user provides
     numStrata <- nstrata
@@ -90,6 +90,12 @@ SPFItoFP <- function(nstrata, modfishery, spfistratvec, startyear, mdldat, spfid
   #column and row names
   colnames(OutFinal) <- substr((startYear-4):(startYear+numYears+nAhead-1),3,4)
   rownames(OutFinal)[-seq(1,nrow(OutFinal),by=numAges)] <- ""
+  #return output
+  return(OutFinal)
+}
+
+writeFP <- function(fpa, fpfilename, ) {
+  OutFinal <- fpa #output from SPFItoFP
   #Write output to a tab deliminated file
   write.table(OutFinal, "Results/tmp.txt", quote=FALSE, sep = "\t", row.names=TRUE, col.names=TRUE)
   #Append top lines to the file
@@ -104,5 +110,6 @@ SPFItoFP <- function(nstrata, modfishery, spfistratvec, startyear, mdldat, spfid
   writeLines(paste(startYear+numYears+nAhead-1,sep=""), fileConn)
   writeLines(paste((length(tmp)-1)/4-1, ",\t", tmp[1],sep=""),fileConn)
   for(i in 2:length(tmp)) writeLines(tmp[i], fileConn)
-  close(fileConn)
+  close(fileConn)  
 }
+
