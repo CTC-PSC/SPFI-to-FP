@@ -2,10 +2,10 @@
 ## SEAK, NBC, WCVI Troll FP Calculator ##
 ## Because Updating Excel Spreadsheets ##
 ## is no fun at all                    ##
-## 9/26/2017                           ##
+## 9/28/2017                           ##
 ## rlpeterson                          ##
 #########################################
-
+deBUG = FALSE
 ###############
 ## FUNCTIONS ##
 ###############
@@ -165,9 +165,9 @@ spfiDAT.wcvi <- readSPFI("Data/WCVI15LC_4000.CSV", "Data/wcvi_spfi.csv")
 names(spfiDAT.wcvi) <- c("YEAR", "SPFI", "FALL.WIN", "SPRING", "SUMMER")
 
 #Convert SPFI to an index
- spfiDAT.seak = spfiINDEX(spfiDAT.seak)
+ #spfiDAT.seak = spfiINDEX(spfiDAT.seak)
  #spfiDAT.nbc  = spfiINDEX(spfiDAT.nbc)
- spfiDAT.wcvi = spfiINDEX(spfiDAT.wcvi)
+ #spfiDAT.wcvi = spfiINDEX(spfiDAT.wcvi)
  
 #Read in STK file (NOTE function assumes stock names are 3 characters long)
 stkDAT <- readSTK("Data/2017BPC_PII_V1.14.STK", stkCharLength=3, fisheryNames = fishery48, outname = "Data/STK_ReFormatted.txt")
@@ -279,10 +279,10 @@ write.table(OutFinal, "Results/FPA_seak.txt", quote=FALSE, sep = "\t", row.names
 fileConn<-file("Results/FPA_seak.txt", "r+b")
 tmp=readLines(fileConn)
 close(fileConn)
-file.create("Results/1AKTR16Ph2.fpa")
-fileConn<-file("Results/1AKTR16Ph2.fpa", "w")
+file.create("Results/1AKTR17Ph2.fpa")
+fileConn<-file("Results/1AKTR17Ph2.fpa", "w")
 writeLines(paste("1,    1,    SEAK Troll: (", startYear+numYears, "-", startYear+numYears+nAhead-1, " = ", startYear+numYears-nAhead,"-",startYear+numYears-1," average)", sep=""), fileConn)
-writeLines(paste(startYear-3,"",sep=""), fileConn)
+writeLines(paste(startYear-4,"",sep=""), fileConn)
 writeLines(paste(startYear+numYears+nAhead-1,sep=""), fileConn)
 writeLines(paste((length(tmp)-1)/4-1, ",\t", tmp[1],sep=""),fileConn)
 for(i in 2:length(tmp)) writeLines(tmp[i], fileConn)
@@ -308,6 +308,11 @@ stratifiedER <- matrix(nrow=numAges*numStocks, ncol = numStrata)
 #For each stock MDL...
 k <- 1
 for(i in 1:numStocks) {
+  if(deBUG) {
+   cat("fun counter:", i, "\n")
+   cat("MOD STOCK MDL:", mdlList[[i]]$ModelStock, "\n")
+   cat("MOD STOCK STK:", as.character(BaseCatER[i,]$Stock), "\n")
+  }
   #Pull out base catch exploitation rates for a specific stock and age
   BaseCatERbyStock <- BaseCatER[i,2:5]
   #Pull out recoveries by stratum (by fishery and age) (stratum 10 to 12)
@@ -328,6 +333,11 @@ FP <- rep(NA, numAges*numStocks*numYears)
 #For each stock in the MDL
 k <- 0
 for(i in 1:numStocks) {
+  if(deBUG) {
+   cat("fun counter:", i, "\n")
+   cat("MOD FISHERY SPFI:", colnames(spfi), "\n")
+   cat("MOD STOCK STK:", colnames(RecByStra), "\n")
+  }
   #Pull out base catch exploitation rates for a specific stock and age
   BaseCatERbyStock <- BaseCatER[i,2:5]
   #For each age in stock
@@ -383,10 +393,10 @@ write.table(OutFinal, "Results/FPA_wcvi.txt", quote=FALSE, sep = "\t", row.names
 fileConn<-file("Results/FPA_wcvi.txt", "r+b")
 tmp=readLines(fileConn)
 close(fileConn)
-file.create("Results/5WCRBT14.fpa")
-fileConn<-file("Results/5WCRBT14.fpa", "w")
+file.create("Results/5WCRBT17.fpa")
+fileConn<-file("Results/5WCRBT17.fpa", "w")
 writeLines(paste("5,    1,    WCVI Troll: (", startYear+numYears, "-", startYear+numYears+nAhead-1, " = ", startYear+numYears-nAhead,"-",startYear+numYears-1," average)", sep=""), fileConn)
-writeLines(paste(startYear-3,"",sep=""), fileConn)
+writeLines(paste(startYear-4,"",sep=""), fileConn)
 writeLines(paste(startYear+numYears+nAhead-1,sep=""), fileConn)
 writeLines(paste((length(tmp)-1)/4-1, ",\t", tmp[1],sep=""),fileConn)
 for(i in 2:length(tmp)) writeLines(tmp[i], fileConn)
@@ -487,10 +497,10 @@ write.table(OutFinal, "Results/FPA_nbc.txt", quote=FALSE, sep = "\t", row.names=
 fileConn<-file("Results/FPA_nbc.txt", "r+b")
 tmp=readLines(fileConn)
 close(fileConn)
-file.create("Results/3NTR14.fpa")
-fileConn<-file("Results/3NTR14.fpa", "w")
+file.create("Results/3NTR17.fpa")
+fileConn<-file("Results/3NTR17.fpa", "w")
 writeLines(paste("3,    1,    NBC Troll: (", startYear+numYears, "-", startYear+numYears+nAhead-1, " = ", startYear+numYears-nAhead,"-",startYear+numYears-1," average)", sep=""), fileConn)
-writeLines(paste(startYear-3,"",sep=""), fileConn)
+writeLines(paste(startYear-4,"",sep=""), fileConn)
 writeLines(paste(startYear+numYears+nAhead-1,sep=""), fileConn)
 writeLines(paste((length(tmp)-1)/4-1, ",\t", tmp[1],sep=""),fileConn)
 for(i in 2:length(tmp)) writeLines(tmp[i], fileConn)
