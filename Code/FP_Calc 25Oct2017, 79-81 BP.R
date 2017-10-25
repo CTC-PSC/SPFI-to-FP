@@ -19,12 +19,12 @@ source("Code/SPFItoFP fun.R")
 fishery48 <- readLines("Data/48FisheryName.txt") #also note that fishery name can't have spaces in it either... 
 
 #Read in SPFI data
-spfiDAT.seak <- readSPFI("Data/SEAK15LC_4000.CSV", "Data/seak_spfi.csv")
-spfiDAT.nbc  <- readSPFI("Data/NBC15LC_CT.CSV", "Data/nbc_spfi.csv")
+spfiDAT.seak <- readSPFI("Data/SEAK15LC_4000, 79-81 BP.CSV", "Data/seak_spfi.csv")
+spfiDAT.nbc  <- readSPFI("Data/NBC15LC_CT, 79-81 BP.CSV", "Data/nbc_spfi.csv")
 spfiDAT.nbc  <- spfiDAT.nbc[,-4]
 names(spfiDAT.nbc) <- c("YEAR", "SPFI", "Total")
 spfiDAT.nbc$YEAR = as.numeric(spfiDAT.nbc$YEAR)
-spfiDAT.wcvi <- readSPFI("Data/WCVI15LC_4000.CSV", "Data/wcvi_spfi.csv")
+spfiDAT.wcvi <- readSPFI("Data/WCVI15LC_4000, 79-81 BP.CSV", "Data/wcvi_spfi.csv")
 names(spfiDAT.wcvi) <- c("YEAR", "SPFI", "FALL.WIN", "SPRING", "SUMMER")
 
 #Convert SPFI to an index
@@ -142,8 +142,8 @@ write.table(OutFinal, "Results/FPA_seak.txt", quote=FALSE, sep = "\t", row.names
 fileConn<-file("Results/FPA_seak.txt", "r+b")
 tmp=readLines(fileConn)
 close(fileConn)
-file.create("Results/1AKTR17Ph2.fpa")
-fileConn<-file("Results/1AKTR17Ph2.fpa", "w")
+file.create("Results/1AKTR17, 79-81 BP.fpa")
+fileConn<-file("Results/1AKTR17, 79-81 BP.fpa", "w")
 writeLines(paste("1,    1,    SEAK Troll: (", startYear+numYears, "-", startYear+numYears+nAhead-1, " = ", startYear+numYears-nAhead,"-",startYear+numYears-1," average)", sep=""), fileConn)
 writeLines(paste(startYear-(startYear-1978-1),"",sep=""), fileConn)
 writeLines(paste(startYear+numYears+nAhead-1,sep=""), fileConn)
@@ -256,8 +256,8 @@ write.table(OutFinal, "Results/FPA_wcvi.txt", quote=FALSE, sep = "\t", row.names
 fileConn<-file("Results/FPA_wcvi.txt", "r+b")
 tmp=readLines(fileConn)
 close(fileConn)
-file.create("Results/5WCRBT17.fpa")
-fileConn<-file("Results/5WCRBT17.fpa", "w")
+file.create("Results/5WCRBT17, 79-81 BP.fpa")
+fileConn<-file("Results/5WCRBT17, 79-81 BP.fpa", "w")
 writeLines(paste("5,    1,    WCVI Troll: (", startYear+numYears, "-", startYear+numYears+nAhead-1, " = ", startYear+numYears-nAhead,"-",startYear+numYears-1," average)", sep=""), fileConn)
 writeLines(paste(startYear-(startYear-1978-1),"",sep=""), fileConn)
 writeLines(paste(startYear+numYears+nAhead-1,sep=""), fileConn)
@@ -360,8 +360,8 @@ write.table(OutFinal, "Results/FPA_nbc.txt", quote=FALSE, sep = "\t", row.names=
 fileConn<-file("Results/FPA_nbc.txt", "r+b")
 tmp=readLines(fileConn)
 close(fileConn)
-file.create("Results/3NTR17.fpa")
-fileConn<-file("Results/3NTR17.fpa", "w")
+file.create("Results/3NTR17, 79-81 BP.fpa")
+fileConn<-file("Results/3NTR17, 79-81 BP.fpa", "w")
 writeLines(paste("3,    1,    NBC Troll: (", startYear+numYears, "-", startYear+numYears+nAhead-1, " = ", startYear+numYears-nAhead,"-",startYear+numYears-1," average)", sep=""), fileConn)
 writeLines(paste(startYear-(startYear-1978-1),"",sep=""), fileConn)
 writeLines(paste(startYear+numYears+nAhead-1,sep=""), fileConn)

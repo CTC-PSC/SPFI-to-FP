@@ -53,7 +53,7 @@ for(i in 1:length(unique(stkDAT$Stock))) {
 #Preliminaries
 numStrata <- 6
 BaseERFisheryName <- "ALASKA_T"
-startYear <- 1983
+startYear <- 1979 #rlp note: changed to gen non-1 base FP
 numAges <- ncol(mdlList[[1]]$RecoveriesByFishery)
 numStocks <- length(mdlList)
 numYears <- nrow(subset(spfiDAT.seak,YEAR>=startYear))
@@ -110,7 +110,7 @@ year2dig <- substr(years,3,4)
 FPdat <- data.frame(stock=stocks, stockn=stockns, age=ages, year=years, year2=year2dig, FP=FP)
 #Manipulate data into same format as the FPA file
 FPAout <- matrix(nrow=numStocks*numAges,ncol=numYears)
-FPAout[,1:4] <- 1 #base period
+ #FPAout[,1:4] <- 1 #base period  #rlp note: commented out to gen non-1 base FP
 colnames(FPAout) <- substr(startYear:(startYear+numYears-1),3,4)
 rownames(FPAout) <- as.vector(mapply(rep, 1:numStocks, numAges))
 yearVector <- startYear:(startYear+numYears-1)
@@ -128,13 +128,13 @@ rownames(tempMat0) <- rep(0, nrow(tempMat0))
 tempMatBP <- matrix(1, nrow=(nrow(Out)+numAges), ncol=length(1979:(startYear-1)))
 #row and cbind these two manipulations
 Out0 <- rbind(tempMat0, Out)
-OutBP.and.0 <- cbind(tempMatBP, Out0)
+ #OutBP.and.0 <- cbind(tempMatBP, Out0) #rlp note: commented out to gen non-1 base FP
 #Calculate nAhead average
-nAheadMat <- matrix(NA, nrow=nrow(OutBP.and.0), ncol=nAhead)
-for(i in 1:nAhead) nAheadMat[,i] <- rowSums(OutBP.and.0[,((ncol(OutBP.and.0)-nAhead+1):ncol(OutBP.and.0))])/nAhead
-OutFinal <- cbind(OutBP.and.0, nAheadMat)
+nAheadMat <- matrix(NA, nrow=nrow(Out0), ncol=nAhead) #rlp note: changed to gen non-1 base FP
+for(i in 1:nAhead) nAheadMat[,i] <- rowSums(Out0[,((ncol(Out0)-nAhead+1):ncol(Out0))])/nAhead #rlp note: changed to gen non-1 base FP
+OutFinal <- cbind(Out0, nAheadMat) #rlp note: changed to gen non-1 base FP
 #column and row names
-colnames(OutFinal) <- substr((startYear-4):(startYear+numYears+nAhead-1),3,4)
+colnames(OutFinal) <- substr(startYear:(startYear+numYears+nAhead-1),3,4) #rlp note: changed to gen non-1 base FP
 rownames(OutFinal)[-seq(1,nrow(OutFinal),by=numAges)] <- ""
 #Write output to a tab deliminated file
 write.table(OutFinal, "Results/FPA_seak.txt", quote=FALSE, sep = "\t", row.names=TRUE, col.names=TRUE)
@@ -142,8 +142,8 @@ write.table(OutFinal, "Results/FPA_seak.txt", quote=FALSE, sep = "\t", row.names
 fileConn<-file("Results/FPA_seak.txt", "r+b")
 tmp=readLines(fileConn)
 close(fileConn)
-file.create("Results/1AKTR17, 79-82 BP.fpa")
-fileConn<-file("Results/1AKTR17, 79-82 BP.fpa", "w")
+file.create("Results/1AKTR17, 79-82 non-1 base FP.fpa") #rlp note: changed to gen non-1 base FP
+fileConn<-file("Results/1AKTR17, 79-82 non-1 base FP.fpa", "w") #rlp note: changed to gen non-1 base FP
 writeLines(paste("1,    1,    SEAK Troll: (", startYear+numYears, "-", startYear+numYears+nAhead-1, " = ", startYear+numYears-nAhead,"-",startYear+numYears-1," average)", sep=""), fileConn)
 writeLines(paste(startYear-(startYear-1978-1),"",sep=""), fileConn)
 writeLines(paste(startYear+numYears+nAhead-1,sep=""), fileConn)
@@ -157,7 +157,7 @@ close(fileConn)
 #Preliminaries
 numStrata <- 3
 BaseERFisheryName <- "WCVI_T"
-startYear <- 1983
+startYear <- 1979 #rlp note: changed to gen non-1 base FP
 numAges <- ncol(mdlList[[1]]$RecoveriesByFishery)
 numStocks <- length(mdlList)
 numYears <- nrow(subset(spfiDAT.wcvi,YEAR>=startYear))
@@ -224,7 +224,7 @@ year2dig <- substr(years,3,4)
 FPdat <- data.frame(stock=stocks, stockn=stockns, age=ages, year=years, year2=year2dig, FP=FP)
 #Manipulate data into same format as the FPA file
 FPAout <- matrix(nrow=numStocks*numAges,ncol=numYears)
-FPAout[,1:4] <- 1 #base period
+#FPAout[,1:4] <- 1 #base period  #rlp note: commented out to gen non-1 base FP
 colnames(FPAout) <- substr(startYear:(startYear+numYears-1),3,4)
 rownames(FPAout) <- as.vector(mapply(rep, 1:numStocks, numAges))
 yearVector <- startYear:(startYear+numYears-1)
@@ -242,13 +242,13 @@ rownames(tempMat0) <- rep(0, nrow(tempMat0))
 tempMatBP <- matrix(1, nrow=(nrow(Out)+numAges), ncol=length(1979:(startYear-1)))
 #row and cbind these two manipulations
 Out0 <- rbind(tempMat0, Out)
-OutBP.and.0 <- cbind(tempMatBP, Out0)
+#OutBP.and.0 <- cbind(tempMatBP, Out0) #rlp note: commented out to gen non-1 base FP
 #Calculate nAhead average
-nAheadMat <- matrix(NA, nrow=nrow(OutBP.and.0), ncol=nAhead)
-for(i in 1:nAhead) nAheadMat[,i] <- rowSums(OutBP.and.0[,((ncol(OutBP.and.0)-nAhead+1):ncol(OutBP.and.0))])/nAhead
-OutFinal <- cbind(OutBP.and.0, nAheadMat)
+nAheadMat <- matrix(NA, nrow=nrow(Out0), ncol=nAhead) #rlp note: changed to gen non-1 base FP
+for(i in 1:nAhead) nAheadMat[,i] <- rowSums(Out0[,((ncol(Out0)-nAhead+1):ncol(Out0))])/nAhead #rlp note: changed to gen non-1 base FP
+OutFinal <- cbind(Out0, nAheadMat) #rlp note: changed to gen non-1 base FP
 #column and row names
-colnames(OutFinal) <- substr((startYear-4):(startYear+numYears+nAhead-1),3,4)
+colnames(OutFinal) <- substr(startYear:(startYear+numYears+nAhead-1),3,4) #rlp note: changed to gen non-1 base FP
 rownames(OutFinal)[-seq(1,nrow(OutFinal),by=numAges)] <- ""
 #Write output to a tab deliminated file
 write.table(OutFinal, "Results/FPA_wcvi.txt", quote=FALSE, sep = "\t", row.names=TRUE, col.names=TRUE)
@@ -256,8 +256,8 @@ write.table(OutFinal, "Results/FPA_wcvi.txt", quote=FALSE, sep = "\t", row.names
 fileConn<-file("Results/FPA_wcvi.txt", "r+b")
 tmp=readLines(fileConn)
 close(fileConn)
-file.create("Results/5WCRBT17, 79-82 BP.fpa")
-fileConn<-file("Results/5WCRBT17, 79-82 BP.fpa", "w")
+file.create("Results/5WCRBT17, 79-82 non-1 base FP.fpa")  #rlp note: changed to gen non-1 base FP
+fileConn<-file("Results/5WCRBT17, 79-82 non-1 base FP.fpa", "w")  #rlp note: changed to gen non-1 base FP
 writeLines(paste("5,    1,    WCVI Troll: (", startYear+numYears, "-", startYear+numYears+nAhead-1, " = ", startYear+numYears-nAhead,"-",startYear+numYears-1," average)", sep=""), fileConn)
 writeLines(paste(startYear-(startYear-1978-1),"",sep=""), fileConn)
 writeLines(paste(startYear+numYears+nAhead-1,sep=""), fileConn)
@@ -271,7 +271,7 @@ close(fileConn)
 #Preliminaries
 numStrata <- 1
 BaseERFisheryName <- "NORTH_T"
-startYear <- 1983
+startYear <- 1979 #rlp note: changed to gen non-1 base FP
 numAges <- ncol(mdlList[[1]]$RecoveriesByFishery)
 numStocks <- length(mdlList)
 numYears <- nrow(subset(spfiDAT.nbc,YEAR>=startYear))
@@ -328,7 +328,7 @@ year2dig <- substr(years,3,4)
 FPdat <- data.frame(stock=stocks, stockn=stockns, age=ages, year=years, year2=year2dig, FP=FP)
 #Manipulate data into same format as the FPA file
 FPAout <- matrix(nrow=numStocks*numAges,ncol=numYears)
-FPAout[,1:4] <- 1 #base period
+#FPAout[,1:4] <- 1 #base period  #rlp note: commented out to gen non-1 base FP
 colnames(FPAout) <- substr(startYear:(startYear+numYears-1),3,4)
 rownames(FPAout) <- as.vector(mapply(rep, 1:numStocks, numAges))
 yearVector <- startYear:(startYear+numYears-1)
@@ -346,13 +346,13 @@ rownames(tempMat0) <- rep(0, nrow(tempMat0))
 tempMatBP <- matrix(1, nrow=(nrow(Out)+numAges), ncol=length(1979:(startYear-1)))
 #row and cbind these two manipulations
 Out0 <- rbind(tempMat0, Out)
-OutBP.and.0 <- cbind(tempMatBP, Out0)
+#OutBP.and.0 <- cbind(tempMatBP, Out0) #rlp note: commented out to gen non-1 base FP
 #Calculate nAhead average
-nAheadMat <- matrix(NA, nrow=nrow(OutBP.and.0), ncol=nAhead)
-for(i in 1:nAhead) nAheadMat[,i] <- rowSums(OutBP.and.0[,((ncol(OutBP.and.0)-nAhead+1):ncol(OutBP.and.0))])/nAhead
-OutFinal <- cbind(OutBP.and.0, nAheadMat)
+nAheadMat <- matrix(NA, nrow=nrow(Out0), ncol=nAhead) #rlp note: changed to gen non-1 base FP
+for(i in 1:nAhead) nAheadMat[,i] <- rowSums(Out0[,((ncol(Out0)-nAhead+1):ncol(Out0))])/nAhead #rlp note: changed to gen non-1 base FP
+OutFinal <- cbind(Out0, nAheadMat) #rlp note: changed to gen non-1 base FP
 #column and row names
-colnames(OutFinal) <- substr((startYear-4):(startYear+numYears+nAhead-1),3,4)
+colnames(OutFinal) <- substr(startYear:(startYear+numYears+nAhead-1),3,4) #rlp note: changed to gen non-1 base FP
 rownames(OutFinal)[-seq(1,nrow(OutFinal),by=numAges)] <- ""
 #Write output to a tab deliminated file
 write.table(OutFinal, "Results/FPA_nbc.txt", quote=FALSE, sep = "\t", row.names=TRUE, col.names=TRUE)
@@ -360,8 +360,8 @@ write.table(OutFinal, "Results/FPA_nbc.txt", quote=FALSE, sep = "\t", row.names=
 fileConn<-file("Results/FPA_nbc.txt", "r+b")
 tmp=readLines(fileConn)
 close(fileConn)
-file.create("Results/3NTR17, 79-82 BP.fpa")
-fileConn<-file("Results/3NTR17, 79-82 BP.fpa", "w")
+file.create("Results/3NTR17, 79-82 non-1 base FP.fpa")  #rlp note: changed to gen non-1 base FP
+fileConn<-file("Results/3NTR17, 79-82 non-1 base FP.fpa", "w")  #rlp note: changed to gen non-1 base FP
 writeLines(paste("3,    1,    NBC Troll: (", startYear+numYears, "-", startYear+numYears+nAhead-1, " = ", startYear+numYears-nAhead,"-",startYear+numYears-1," average)", sep=""), fileConn)
 writeLines(paste(startYear-(startYear-1978-1),"",sep=""), fileConn)
 writeLines(paste(startYear+numYears+nAhead-1,sep=""), fileConn)
