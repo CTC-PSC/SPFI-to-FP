@@ -23,6 +23,7 @@ spfiDAT.seak <- readSPFI("Data/SEAK15LC_4000.CSV", "Data/seak_spfi.csv")
 spfiDAT.nbc  <- readSPFI("Data/NBC15LC_CT.CSV", "Data/nbc_spfi.csv")
 spfiDAT.nbc  <- spfiDAT.nbc[,-4]
 names(spfiDAT.nbc) <- c("YEAR", "SPFI", "Total")
+spfiDAT.nbc$YEAR = as.numeric(spfiDAT.nbc$YEAR)
 spfiDAT.wcvi <- readSPFI("Data/WCVI15LC_4000.CSV", "Data/wcvi_spfi.csv")
 names(spfiDAT.wcvi) <- c("YEAR", "SPFI", "FALL.WIN", "SPRING", "SUMMER")
 
@@ -32,7 +33,7 @@ names(spfiDAT.wcvi) <- c("YEAR", "SPFI", "FALL.WIN", "SPRING", "SUMMER")
  #spfiDAT.wcvi = spfiINDEX(spfiDAT.wcvi)
  
 #Read in STK file (NOTE function assumes stock names are 3 characters long)
-stkDAT <- readSTK("Data/2017BPC_PII_V1.14.STK", stkCharLength=3, fisheryNames = fishery48, outname = "Data/STK_ReFormatted.txt")
+stkDAT <- readSTK("Data/2017BPC_PII_V1.18.STK", stkCharLength=3, fisheryNames = fishery48, outname = "Data/STK_ReFormatted.txt")
 
 #Read in MDL data as a mega-List (NOTE that files must be placed into the list in the same order as the STK file)
 myList <- list.files("Data/56F-adj/", pattern=".MDL", full.names=TRUE)
